@@ -19,13 +19,23 @@ public:
         float current_time = t_min;
         float current_phi = phi_0;
         float current_vel = v_0;
+        float prev_time = t_min;
+        float prev_phi = phi_0;
+        float prev_vel = v_0;
+        int counter = 0;
         while (current_time <= t_max){
-                data_phi.push_back(current_phi);
-                data_vel.push_back(current_vel);
-                data_time.push_back(current_time);
-                current_vel = data_vel.back() + (- omega * omega * data_phi.back() * d_t);
-                current_phi = data_phi.back() + data_vel.back() * d_t;
+                if (counter % 10000 == 0){
+                    data_phi.push_back(current_phi);
+                    data_vel.push_back(current_vel);
+                    data_time.push_back(current_time);
+                }
+                current_vel = prev_vel+ (- omega * omega * prev_phi * d_t);
+                current_phi = prev_phi+ prev_vel * d_t;
                 current_time += d_t;
+                prev_phi = current_phi;
+                prev_vel = current_vel;
+                prev_time = current_time;
+                counter++;
         }
     }
 
@@ -83,13 +93,23 @@ public:
         float current_time = t_min;
         float current_phi = phi_0;
         float current_vel = v_0;
+        float prev_time = t_min;
+        float prev_phi = phi_0;
+        float prev_vel = v_0;
+        int counter = 0;
         while (current_time <= t_max){
-                data_phi.push_back(current_phi);
-                data_vel.push_back(current_vel);
-                data_time.push_back(current_time);
-                current_vel = kahan_summation(data_vel.back(), - omega * omega * data_phi.back() * d_t, compensation_vel);
-                current_phi = kahan_summation(data_phi.back(), data_vel.back() * d_t, compensation_phi);
+                if (counter % 10000 == 0){
+                    data_phi.push_back(current_phi);
+                    data_vel.push_back(current_vel);
+                    data_time.push_back(current_time);
+                }
+                current_vel = kahan_summation(prev_vel, - omega * omega * prev_phi * d_t, compensation_vel);
+                current_phi = kahan_summation(prev_phi, prev_vel * d_t, compensation_phi);
                 current_time = kahan_summation(current_time, d_t, compensation_time);
+                prev_phi = current_phi;
+                prev_vel = current_vel;
+                prev_time = current_time;
+                counter++;
         }
     }
 
@@ -132,7 +152,7 @@ int main(){
     std::ofstream out_file; //output
     out_file.open("./data_first_sol.txt");
     for (int i = 0; i < data_phi.size(); i++){
-        if (i % 10000 == 0) {
+        if (i % 1 == 0) {
             out_file << data_time[i] << " " << data_phi[i] << " " << data_vel[i] << " " <<  data_energy[i] << "\n";
         }
     }
@@ -153,7 +173,7 @@ int main(){
 
     out_file.open("./data_second_sol.txt");
     for (int i = 0; i < data_phi.size(); i++){
-        if (i % 10000 == 0) {
+        if (i % 1 == 0) {
             out_file<< data_time[i] << " " << data_phi[i] << " " << data_vel[i] << " " << data_energy[i] << "\n";
         }
     }
