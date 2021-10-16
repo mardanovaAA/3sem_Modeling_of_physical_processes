@@ -6,7 +6,7 @@
 
 
 int main(){
-    double vel_0 = 1;
+    double vel_0 = 2;
     double phi_0 = 0;
     double dt = 0.0001;
     double t = 0;
@@ -22,13 +22,13 @@ int main(){
     double vel_next;
 
     std::ofstream out;
-    out.open("./Eiler_sol_1.txt");
+    out.open("./Eiler_sol_2.txt");
 
     //Eiler
 
     while (t < t_max){
         if (counter % 100 == 0){
-            out << t << " " << phi_t << " " << vel_t << " " << "\n";
+            out << t << " " << phi_t << " " << vel_t << " " << (1-cos(phi_t))*omega*omega + vel_t*vel_t/2 << "\n";
         }
         phi_next = phi_t + vel_t * dt;
         vel_next = vel_t - omega*omega*dt * sin(phi_t);
@@ -47,11 +47,11 @@ int main(){
     vel_t = vel_0;
     counter = 0;
     t = 0;
-    out.open("./Khoin_sol_1.txt");
+    out.open("./Khoin_sol_2.txt");
 
     while (t < t_max){
         if (counter % 100 == 0){
-            out << t << " " << phi_t << " " << vel_t << " " << "\n";
+            out << t << " " << phi_t << " " << vel_t << " " << (1-cos(phi_t))*omega*omega + vel_t*vel_t/2 << "\n";
         }
         phi_h = phi_t + vel_t * dt;
         vel_h = vel_t - omega*omega * sin(phi_t)* dt;
